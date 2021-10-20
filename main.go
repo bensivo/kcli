@@ -2,13 +2,15 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
+	"os"
 
 	"github.com/segmentio/kafka-go"
+
+	"bensivo.com/kcli/config"
 )
 
-func absInt64(n int64) int64 {
+func absInt(n int) int {
 	if n < 0 {
 		return -n
 	} else {
@@ -16,59 +18,73 @@ func absInt64(n int64) int64 {
 	}
 }
 
-func main() {
-	bootstrapServerPtr := flag.String("b", "", "Bootstrap server")
-	topicPtr := flag.String("t", "", "Topic")
-	consumePtr := flag.Bool("c", false, "Consume")
-	productPtr := flag.Bool("p", false, "Produce")
-	offsetPtr := flag.Int64("o", 0, "Offset (use negative for from-end)")
-	flag.Parse()
+func produce(cfg config.ProducerConfig) {
+	fmt.Println(cfg)
+	bootstrapServer := cfg.ClusterConfig.BootstrapServer
+	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition)
+	if err != nil {
+		fmt.Println("Failed to dial leader", err)
+	}
+	defer conn.Close()
 
-	if *productPtr && len(flag.Args()) > 0 {
-		conn, err := kafka.DialLeader(context.Background(), "tcp", *bootstrapServerPtr, *topicPtr, 0)
-		if err != nil {
-			fmt.Println("Failed to dial leader", err)
+	_, err = conn.WriteMessages(
+		kafka.Message{Value: []byte("Hello")},
+	)
+	if err != nil {
+		fmt.Println("Failed to write messages", err)
+	}
+}
+
+func consume(cfg config.ConsumerConfig) {
+	fmt.Println(cfg)
+	bootstrapServer := cfg.ClusterConfig.BootstrapServer
+	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition)
+	if err != nil {
+		fmt.Println("Failed to dial leader", err)
+	}
+	defer conn.Close()
+
+	if cfg.Offset != 0 {
+		var seekPos int
+		if cfg.Offset > 0 {
+			seekPos = kafka.SeekStart
+		} else {
+			seekPos = kafka.SeekEnd
 		}
-		defer conn.Close()
 
-		_, err = conn.WriteMessages(
-			kafka.Message{Value: []byte(flag.Args()[0])},
-		)
+		_, err := conn.Seek(int64(absInt(cfg.Offset)), seekPos)
 		if err != nil {
-			fmt.Println("Failed to write messages", err)
+			fmt.Println("Failed to seek offset", err)
+			return
 		}
 	}
 
-	if *consumePtr {
-		conn, err := kafka.DialLeader(context.Background(), "tcp", *bootstrapServerPtr, *topicPtr, 0)
+	for {
+		msg, err := conn.ReadMessage(10e6)
 		if err != nil {
-			fmt.Println("Failed to dial leader", err)
-		}
-		defer conn.Close()
-
-		if *offsetPtr != 0 {
-			var seekPos int
-			if *offsetPtr > 0 {
-				seekPos = kafka.SeekStart
-			} else {
-				seekPos = kafka.SeekEnd
-			}
-
-			_, err := conn.Seek(absInt64(*offsetPtr), seekPos)
-			if err != nil {
-				fmt.Println("Failed to seek offset", err)
-				return
-			}
+			fmt.Println("Failed to read message", err)
+			break
 		}
 
-		for {
-			msg, err := conn.ReadMessage(10e6)
-			if err != nil {
-				fmt.Println("Failed to read message", err)
-				break
-			}
+		fmt.Println(string(msg.Value))
+	}
+}
 
-			fmt.Println(string(msg.Value))
-		}
+func main() {
+	if len(os.Args) < 2 {
+		// TODO: print help
+		fmt.Println("No subcommand specified")
+		os.Exit(1)
+	}
+
+	cmd := os.Args[1]
+
+	switch cmd {
+	case "produce":
+		produce(config.GetProducerConfig())
+	case "consume":
+		consume(config.GetConsumerConfig())
+	default:
+		fmt.Printf("Command not recognized: %s\n", cmd)
 	}
 }
