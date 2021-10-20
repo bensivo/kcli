@@ -22,7 +22,7 @@ func absInt(n int) int {
 
 func produce(cfg config.ProducerConfig) {
 	bootstrapServer := cfg.ClusterConfig.BootstrapServer
-	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition)
+	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Read from all partitions
 	if err != nil {
 		fmt.Println("Failed to dial leader", err)
 		os.Exit(1)
@@ -55,7 +55,7 @@ func produce(cfg config.ProducerConfig) {
 
 func consume(cfg config.ConsumerConfig) {
 	bootstrapServer := cfg.ClusterConfig.BootstrapServer
-	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition)
+	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Write to round-robin partitions
 	if err != nil {
 		fmt.Println("Failed to dial leader", err)
 	}
@@ -76,6 +76,14 @@ func consume(cfg config.ConsumerConfig) {
 		}
 	}
 
+	last, err := conn.ReadLastOffset()
+	if err != nil {
+		fmt.Println("Failed to read offset", err)
+	}
+	if last == 0 {
+		fmt.Println("End of topic")
+	}
+
 	for {
 		msg, err := conn.ReadMessage(10e6)
 		if err != nil {
@@ -83,7 +91,16 @@ func consume(cfg config.ConsumerConfig) {
 			break
 		}
 
-		fmt.Printf("%d: %s\n", msg.Offset, string(msg.Value))
+		fmt.Printf("%d: %s\n", msg.Offset, string(msg.Value)) // TODO: Don't actually print offsets
+
+		last, err = conn.ReadLastOffset()
+		if err != nil {
+			fmt.Println("Failed to read offset", err)
+		}
+
+		if msg.Offset == last-1 {
+			fmt.Println("End of topic") // TODO: Option for exiting once you reach the end of the topic
+		}
 	}
 }
 
