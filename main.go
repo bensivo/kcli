@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/segmentio/kafka-go"
@@ -19,24 +21,39 @@ func absInt(n int) int {
 }
 
 func produce(cfg config.ProducerConfig) {
-	fmt.Println(cfg)
 	bootstrapServer := cfg.ClusterConfig.BootstrapServer
 	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition)
 	if err != nil {
 		fmt.Println("Failed to dial leader", err)
+		os.Exit(1)
 	}
 	defer conn.Close()
 
-	_, err = conn.WriteMessages(
-		kafka.Message{Value: []byte("Hello")},
-	)
-	if err != nil {
-		fmt.Println("Failed to write messages", err)
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		input, err := reader.ReadString('\n')
+		if err == io.EOF {
+			os.Exit(0)
+		}
+
+		if err != nil {
+			fmt.Println("Failed to read input", err)
+			os.Exit(1)
+		}
+
+		message := input[:len(input)-1]
+
+		_, err = conn.WriteMessages(
+			kafka.Message{Value: []byte(message)},
+		)
+		if err != nil {
+			fmt.Println("Failed to write messages", err)
+			os.Exit(1)
+		}
 	}
 }
 
 func consume(cfg config.ConsumerConfig) {
-	fmt.Println(cfg)
 	bootstrapServer := cfg.ClusterConfig.BootstrapServer
 	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition)
 	if err != nil {
@@ -66,13 +83,12 @@ func consume(cfg config.ConsumerConfig) {
 			break
 		}
 
-		fmt.Println(string(msg.Value))
+		fmt.Printf("%d: %s\n", msg.Offset, string(msg.Value))
 	}
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		// TODO: print help
 		fmt.Println("No subcommand specified")
 		os.Exit(1)
 	}
