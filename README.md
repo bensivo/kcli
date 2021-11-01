@@ -2,10 +2,21 @@
 A kafka client written in go.
 
 ## Usage
+### Topics
+List topics with:
+```
+kcli topic list -b <bootstrap server>
+```
+
+Create a topic with:
+```
+kcli topic create -b <bootstrap server> -t <topic name> -p <partitions> -r <replication factor>
+```
 ### Consume messages
 ```
-kcli consume -t topic01
+kcli consume -t topic01 -p <partition> -o <offset>
 ```
+By default, uses partition 0 and the earliest available offset.
 
 Specifying offsets
 ```
@@ -18,7 +29,7 @@ kcli -b localhost:9092 -c -t topic01 -o -2
 
 ### Produce messages
 ```
-kcli produce -t topic01
+kcli produce -t topic01 -p <partition>
 // Type your message and press 'enter' to publish
 ```
 

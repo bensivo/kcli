@@ -5,7 +5,9 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -112,6 +114,56 @@ func consume(cfg config.ConsumerConfig) {
 	}
 }
 
+func listTopics(cfg config.ClusterConfig) {
+	bootstrapServer := cfg.BootstrapServer
+	conn, err := kafka.Dial("tcp", bootstrapServer)
+	defer conn.Close()
+
+	partitions, err := conn.ReadPartitions()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	for _, p := range partitions {
+		fmt.Println(p.Topic, p.ID)
+	}
+}
+
+func createTopic(cfg config.CreateTopicConfig) {
+	// to create topics when auto.create.topics.enable='false'
+
+	conn, err := kafka.Dial("tcp", cfg.ClusterConfig.BootstrapServer)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer conn.Close()
+
+	controller, err := conn.Controller()
+	if err != nil {
+		panic(err.Error())
+	}
+	var controllerConn *kafka.Conn
+	controllerConn, err = kafka.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
+	if err != nil {
+		panic(err.Error())
+	}
+	defer controllerConn.Close()
+
+	topicConfigs := []kafka.TopicConfig{
+		{
+			Topic:             cfg.Topic,
+			NumPartitions:     cfg.Partitions,
+			ReplicationFactor: cfg.ReplicationFactor,
+		},
+	}
+
+	err = controllerConn.CreateTopics(topicConfigs...)
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("No subcommand specified")
@@ -125,6 +177,14 @@ func main() {
 		produce(config.GetProducerConfig())
 	case "consume":
 		consume(config.GetConsumerConfig())
+	case "topic":
+		subcommand := os.Args[2]
+		switch subcommand {
+		case "list":
+			listTopics(config.GetClusterConfig())
+		case "create":
+			createTopic(config.GetCreateTopicConfig())
+		}
 	default:
 		fmt.Printf("Command not recognized: %s\n", cmd)
 	}
