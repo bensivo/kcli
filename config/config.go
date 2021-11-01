@@ -7,6 +7,7 @@ import (
 
 type ClusterConfig struct {
 	BootstrapServer string
+	Timeout         int64
 }
 
 type ProducerConfig struct {
@@ -25,6 +26,7 @@ type ConsumerConfig struct {
 func GetProducerConfig() ProducerConfig {
 	flags := flag.NewFlagSet("producer", flag.ExitOnError)
 	bootstrapServer := flags.String("b", "", "BootstrapServer")
+	connectionTimeout := flags.Int64("timeout", 10, "ConnectionTimeout")
 	topic := flags.String("t", "", "Topic")
 	partition := flags.Int("p", 0, "Partition")
 	flags.Parse(os.Args[2:])
@@ -34,6 +36,7 @@ func GetProducerConfig() ProducerConfig {
 		Partition: *partition,
 		ClusterConfig: ClusterConfig{
 			BootstrapServer: *bootstrapServer,
+			Timeout:         *connectionTimeout,
 		},
 	}
 }
@@ -41,6 +44,7 @@ func GetProducerConfig() ProducerConfig {
 func GetConsumerConfig() ConsumerConfig {
 	flags := flag.NewFlagSet("consumer", flag.ExitOnError)
 	bootstrapServer := flags.String("b", "", "BootstrapServer")
+	connectionTimeout := flags.Int64("timeout", 10, "ConnectionTimeout")
 	topic := flags.String("t", "", "Topic")
 	partition := flags.Int("p", 0, "Partition")
 	offset := flags.Int("o", 0, "Offset")
@@ -52,6 +56,7 @@ func GetConsumerConfig() ConsumerConfig {
 		Offset:    *offset,
 		ClusterConfig: ClusterConfig{
 			BootstrapServer: *bootstrapServer,
+			Timeout:         *connectionTimeout,
 		},
 	}
 }

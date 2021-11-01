@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/segmentio/kafka-go"
 
@@ -21,13 +22,16 @@ func absInt(n int) int {
 }
 
 func produce(cfg config.ProducerConfig) {
+	ctx, _ := context.WithTimeout(context.Background(), time.Duration(cfg.ClusterConfig.Timeout)*time.Second)
 	bootstrapServer := cfg.ClusterConfig.BootstrapServer
-	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Read from all partitions
+	conn, err := kafka.DialLeader(ctx, "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Read from all partitions
 	if err != nil {
 		fmt.Println("Failed to dial leader", err)
 		os.Exit(1)
 	}
 	defer conn.Close()
+
+	fmt.Println("connected")
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
@@ -43,21 +47,25 @@ func produce(cfg config.ProducerConfig) {
 
 		message := input[:len(input)-1]
 
-		_, err = conn.WriteMessages(
+		res, err := conn.WriteMessages(
 			kafka.Message{Value: []byte(message)},
 		)
 		if err != nil {
 			fmt.Println("Failed to write messages", err)
 			os.Exit(1)
 		}
+
+		fmt.Println(res)
 	}
 }
 
 func consume(cfg config.ConsumerConfig) {
+	ctx, _ := context.WithTimeout(context.Background(), time.Duration(cfg.ClusterConfig.Timeout)*time.Second)
 	bootstrapServer := cfg.ClusterConfig.BootstrapServer
-	conn, err := kafka.DialLeader(context.Background(), "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Write to round-robin partitions
+	conn, err := kafka.DialLeader(ctx, "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Write to round-robin partitions
 	if err != nil {
 		fmt.Println("Failed to dial leader", err)
+		os.Exit(1)
 	}
 	defer conn.Close()
 
