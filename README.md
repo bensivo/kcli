@@ -12,6 +12,7 @@ Create a topic with:
 ```
 kcli topic create -b <bootstrap server> -t <topic name> -p <partitions> -r <replication factor>
 ```
+
 ### Consume messages
 ```
 kcli consume -b <bootstrap server> -t <topic> -p <partition> -o <offset>

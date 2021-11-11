@@ -89,7 +89,7 @@ func GetCreateTopicConfig() CreateTopicConfig {
 	partitions := flags.Int("p", 1, "Partitions (default 1)")
 	replicationFactor := flags.Int("r", 1, "ReplicationFactor (default 1)")
 
-	flags.Parse(os.Args[2:])
+	flags.Parse(os.Args[3:])
 
 	return CreateTopicConfig{
 		Topic:             *topic,
