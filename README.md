@@ -1,6 +1,21 @@
 # kcli
 A kafka client written in go.
 
+## Development
+### Run tests
+Install bats and helper libraries with brew
+```
+brew tap kaos/shell
+brew install bats-core
+brew install bats-assert
+brew install bats-file
+```
+
+Run tests with:
+```
+bats ./test/basic.bats
+```
+
 ## Usage
 ### Topics
 List topics with:

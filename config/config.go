@@ -21,6 +21,7 @@ type ConsumerConfig struct {
 	Partition     int
 	Offset        int
 	ClusterConfig ClusterConfig
+	Exit          bool
 }
 
 type CreateTopicConfig struct {
@@ -55,12 +56,14 @@ func GetConsumerConfig() ConsumerConfig {
 	topic := flags.String("t", "", "Topic")
 	partition := flags.Int("p", 0, "Partition")
 	offset := flags.Int("o", 0, "Offset")
+	exit := flags.Bool("e", false, "Exit")
 	flags.Parse(os.Args[2:])
 
 	return ConsumerConfig{
 		Topic:     *topic,
 		Partition: *partition,
 		Offset:    *offset,
+		Exit:      *exit,
 		ClusterConfig: ClusterConfig{
 			BootstrapServer: *bootstrapServer,
 			Timeout:         *connectionTimeout,

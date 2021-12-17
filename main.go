@@ -91,7 +91,9 @@ func consume(cfg config.ConsumerConfig) {
 		fmt.Println("Failed to read offset", err)
 	}
 	if last == 0 {
-		fmt.Println("End of topic")
+		if cfg.Exit {
+			os.Exit(0)
+		}
 	}
 
 	for {
@@ -101,7 +103,8 @@ func consume(cfg config.ConsumerConfig) {
 			break
 		}
 
-		fmt.Printf("%d: %s\n", msg.Offset, string(msg.Value)) // TODO: Don't actually print offsets
+		// fmt.Printf("%d: %s\n", msg.Offset, string(msg.Value)) // TODO: Don't actually print offsets
+		fmt.Printf("%s\n", string(msg.Value)) // TODO: Don't actually print offsets
 
 		last, err = conn.ReadLastOffset()
 		if err != nil {
@@ -109,14 +112,16 @@ func consume(cfg config.ConsumerConfig) {
 		}
 
 		if msg.Offset == last-1 {
-			fmt.Println("End of topic") // TODO: Option for exiting once you reach the end of the topic
+			if cfg.Exit {
+				os.Exit(0)
+			}
 		}
 	}
 }
 
 func listTopics(cfg config.ClusterConfig) {
 	bootstrapServer := cfg.BootstrapServer
-	conn, err := kafka.Dial("tcp", bootstrapServer)
+	conn, _ := kafka.Dial("tcp", bootstrapServer)
 	defer conn.Close()
 
 	partitions, err := conn.ReadPartitions()
