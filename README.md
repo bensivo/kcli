@@ -11,7 +11,12 @@ brew install bats-assert
 brew install bats-file
 ```
 
-Run tests with:
+Start local kafka broker:
+```
+docker compose up
+```
+
+Wait for the broker to start, then run tests with:
 ```
 bats ./test/basic.bats
 ```
