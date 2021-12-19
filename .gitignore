@@ -1,1 +1,4 @@
-kcli
+# Any files without an extension
+*
+!/**/
+!*.*

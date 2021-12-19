@@ -1,37 +1,37 @@
-package config
+package args
 
 import (
 	"flag"
 	"os"
 )
 
-type ClusterConfig struct {
+type ClusterArgs struct {
 	BootstrapServer string
 	Timeout         int64
 }
 
-type ProducerConfig struct {
-	Topic         string
-	Partition     int
-	ClusterConfig ClusterConfig
+type ProducerArgs struct {
+	Topic       string
+	Partition   int
+	ClusterArgs ClusterArgs
 }
 
-type ConsumerConfig struct {
-	Topic         string
-	Partition     int
-	Offset        int
-	ClusterConfig ClusterConfig
-	Exit          bool
+type ConsumerArgs struct {
+	Topic       string
+	Partition   int
+	Offset      int
+	ClusterArgs ClusterArgs
+	Exit        bool
 }
 
-type CreateTopicConfig struct {
+type CreateTopicArgs struct {
 	Topic             string
 	Partitions        int
 	ReplicationFactor int
-	ClusterConfig     ClusterConfig
+	ClusterArgs       ClusterArgs
 }
 
-func GetProducerConfig() ProducerConfig {
+func GetProducerArgs() ProducerArgs {
 	flags := flag.NewFlagSet("producer", flag.ExitOnError)
 	bootstrapServer := flags.String("b", "", "BootstrapServer")
 	connectionTimeout := flags.Int64("timeout", 10, "ConnectionTimeout")
@@ -39,17 +39,17 @@ func GetProducerConfig() ProducerConfig {
 	partition := flags.Int("p", 0, "Partition")
 	flags.Parse(os.Args[2:])
 
-	return ProducerConfig{
+	return ProducerArgs{
 		Topic:     *topic,
 		Partition: *partition,
-		ClusterConfig: ClusterConfig{
+		ClusterArgs: ClusterArgs{
 			BootstrapServer: *bootstrapServer,
 			Timeout:         *connectionTimeout,
 		},
 	}
 }
 
-func GetConsumerConfig() ConsumerConfig {
+func GetConsumerArgs() ConsumerArgs {
 	flags := flag.NewFlagSet("consumer", flag.ExitOnError)
 	bootstrapServer := flags.String("b", "", "BootstrapServer")
 	connectionTimeout := flags.Int64("timeout", 10, "ConnectionTimeout")
@@ -59,32 +59,32 @@ func GetConsumerConfig() ConsumerConfig {
 	exit := flags.Bool("e", false, "Exit")
 	flags.Parse(os.Args[2:])
 
-	return ConsumerConfig{
+	return ConsumerArgs{
 		Topic:     *topic,
 		Partition: *partition,
 		Offset:    *offset,
 		Exit:      *exit,
-		ClusterConfig: ClusterConfig{
+		ClusterArgs: ClusterArgs{
 			BootstrapServer: *bootstrapServer,
 			Timeout:         *connectionTimeout,
 		},
 	}
 }
 
-func GetClusterConfig() ClusterConfig {
+func GetTopicListArgs() ClusterArgs {
 	flags := flag.NewFlagSet("cluster", flag.ExitOnError)
 	bootstrapServer := flags.String("b", "", "BootstrapServer")
 	connectionTimeout := flags.Int64("timeout", 10, "ConnectionTimeout")
 
-	flags.Parse(os.Args[2:])
+	flags.Parse(os.Args[3:])
 
-	return ClusterConfig{
+	return ClusterArgs{
 		BootstrapServer: *bootstrapServer,
 		Timeout:         *connectionTimeout,
 	}
 }
 
-func GetCreateTopicConfig() CreateTopicConfig {
+func GetCreateTopicArgs() CreateTopicArgs {
 	flags := flag.NewFlagSet("cluster", flag.ExitOnError)
 	bootstrapServer := flags.String("b", "", "BootstrapServer")
 	connectionTimeout := flags.Int64("timeout", 10, "ConnectionTimeout")
@@ -94,11 +94,11 @@ func GetCreateTopicConfig() CreateTopicConfig {
 
 	flags.Parse(os.Args[3:])
 
-	return CreateTopicConfig{
+	return CreateTopicArgs{
 		Topic:             *topic,
 		Partitions:        *partitions,
 		ReplicationFactor: *replicationFactor,
-		ClusterConfig: ClusterConfig{
+		ClusterArgs: ClusterArgs{
 			BootstrapServer: *bootstrapServer,
 			Timeout:         *connectionTimeout,
 		},

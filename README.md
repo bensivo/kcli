@@ -1,24 +1,14 @@
 # kcli
 A kafka client written in go.
 
-## Development
-### Run tests
-Install bats and helper libraries with brew
+## Installation
+To install kcli, checkout this repo and build it from scratch:
 ```
-brew tap kaos/shell
-brew install bats-core
-brew install bats-assert
-brew install bats-file
-```
+git clone https://gitlab.com/bensivo/kcli.git
+cd kcli
+go install ./cmd/kcli
 
-Start local kafka broker:
-```
-docker compose up
-```
-
-Wait for the broker to start, then run tests with:
-```
-bats ./test
+# Ensure that ~/go/bin is in your PATH, or copy ~/go/bin/kcli to /usr/local/bin/kcli
 ```
 
 ## Usage
@@ -57,4 +47,25 @@ kcli produce -b <bootstrap server> -t <topic> -p <partition>
 You can also pipe messages in from stdin, separated by newlines
 ```
 echo "My Message" | kcli produce -b <bootstrap server> -t <topic>
+```
+
+## Development
+### Run tests
+Install bats and helper libraries with brew
+```
+brew tap kaos/shell
+brew install bats-core
+brew install bats-assert
+brew install bats-file
+```
+
+Start local kafka broker:
+```
+docker compose up
+```
+
+Wait for the broker to start, then run tests with:
+```
+make build
+make test
 ```
