@@ -1,25 +1,5 @@
 # kcli
-A kafka client written in go.
-
-## Development
-### Run tests
-Install bats and helper libraries with brew
-```
-brew tap kaos/shell
-brew install bats-core
-brew install bats-assert
-brew install bats-file
-```
-
-Start local kafka broker:
-```
-docker compose up
-```
-
-Wait for the broker to start, then run tests with:
-```
-bats ./test
-```
+WIP: A command-line Kakfa client written in go.
 
 ## Usage
 ### Topics
@@ -58,3 +38,27 @@ You can also pipe messages in from stdin, separated by newlines
 ```
 echo "My Message" | kcli produce -b <bootstrap server> -t <topic>
 ```
+
+
+## Development
+### Run tests
+We use bats-core for unit testing, because of its relative ease of setup. However, this does mean that the test suite is restricted by the terminal environment in which it is run.
+
+Install bats and helper libraries with brew:
+```
+brew tap kaos/shell
+brew install bats-core
+brew install bats-assert
+brew install bats-file
+```
+
+Start local kafka broker:
+```
+docker compose up
+```
+
+Wait for the broker to start, then run tests with:
+```
+bats ./test
+```
+
