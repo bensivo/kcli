@@ -8,7 +8,7 @@ git clone https://gitlab.com/bensivo/kcli.git
 cd kcli
 go install ./cmd/kcli
 
-# Ensure that ~/go/bin is in your PATH, or copy ~/go/bin/kcli to /usr/local/bin/kcli
+# Ensure that ~/go/bin is in your PATH
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ kcli topic create -b <bootstrap server> -t <topic name> -p <partitions> -r <repl
 ```
 kcli consume -b <bootstrap server> -t <topic> -p <partition> -o <offset>
 ```
-By default, uses partition 0 and the earliest available offset.
+By default, kcli uses partition 0 and the earliest available offset.
 
 Specifying offsets
 ```
@@ -51,6 +51,8 @@ echo "My Message" | kcli produce -b <bootstrap server> -t <topic>
 
 ## Development
 ### Run tests
+We use bats-core for testing, for ease of use. This does mean unit tests may be dependent on your available terminal environment.
+
 Install bats and helper libraries with brew
 ```
 brew tap kaos/shell
@@ -61,7 +63,7 @@ brew install bats-file
 
 Start local kafka broker:
 ```
-docker compose up
+docker compose up -d
 ```
 
 Wait for the broker to start, then run tests with:
