@@ -18,7 +18,7 @@ docker compose up
 
 Wait for the broker to start, then run tests with:
 ```
-bats ./test/basic.bats
+bats ./test
 ```
 
 ## Usage
