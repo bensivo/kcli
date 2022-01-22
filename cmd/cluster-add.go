@@ -13,7 +13,8 @@ var addClusterCmd = &cobra.Command{
 	Use:   "add <name> ",
 	Short: "Add a new kafka cluster",
 	Run: func(cmd *cobra.Command, arguments []string) {
-		cluster.AddCluster(cluster.ClusterArgs{
+		name := cmd.Flags().Arg(0)
+		cluster.AddCluster(name, cluster.ClusterArgs{
 			BootstrapServer: "localhost:9092",
 			Timeout:         10,
 		})

@@ -5,8 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
+	"bensivo.com/kcli/internal/cluster"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +13,7 @@ var removeClusterCmd = &cobra.Command{
 	Use:   "remove <name>",
 	Short: "Remove a kafka cluster",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Remove Cluster called")
+		cluster.RemoveCluster(cmd.Flags().Arg(0))
 	},
 }
 

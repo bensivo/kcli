@@ -1,6 +1,7 @@
 package cluster
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -12,14 +13,58 @@ type ClusterArgs struct {
 	Timeout         int64
 }
 
-func AddCluster(options ClusterArgs) {
-	// TODO: Use a standard ~/.kcli.yaml file
-	// TODO: Read the existing file and append a cluster to it
-	bytes, err := yaml.Marshal(options)
-	if err != nil {
-		fmt.Println("Error occurred marshalling", err)
+type ConfigFileContents map[string]ClusterArgs
+
+func AddCluster(name string, options ClusterArgs) {
+	fmt.Printf("Adding cluster %s\n", name)
+	config := ReadConfig()
+
+	config[name] = options
+	WriteConfig(config)
+}
+
+func RemoveCluster(name string) {
+	fmt.Printf("Removing cluster %s\n", name)
+	config := ReadConfig()
+	delete(config, name)
+	WriteConfig(config)
+}
+
+func ListClusters() {
+	fmt.Printf("Cluster: \n")
+
+	config := ReadConfig()
+	for clusterName := range config {
+		fmt.Printf("  - %s\n", clusterName)
+	}
+
+}
+
+func ReadConfig() ConfigFileContents {
+	bytes, err := os.ReadFile("kcli.yaml")
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		fmt.Println("Error reading kcli file", err)
 		os.Exit(1)
 	}
 
-	os.WriteFile("./kcli.yaml", bytes, 0666)
+	var config ConfigFileContents = ConfigFileContents{}
+	if bytes != nil {
+		err = yaml.Unmarshal(bytes, &config)
+		if err != nil {
+			fmt.Println("Error while parsing config file", err)
+			os.Exit(1)
+		}
+	}
+
+	return config
+}
+
+func WriteConfig(config ConfigFileContents) {
+	bytes, err := yaml.Marshal(config)
+	if err != nil {
+		fmt.Println("Error writing config file", err)
+		os.Exit(1)
+	}
+
+	os.WriteFile("kcli.yaml", bytes, 0666)
 }
