@@ -1,10 +1,10 @@
 .PHONY: PHONY
 
 build: .PHONY
-	go build ./cmd/kcli
+	go build 
 
 install: .PHONY
-	go install ./cmd/kcli
+	go install
 
 test: .PHONY
 	bats ./test

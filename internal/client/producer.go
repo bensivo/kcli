@@ -22,8 +22,6 @@ func Produce(cfg args.ProducerArgs) {
 	}
 	defer conn.Close()
 
-	fmt.Println("connected")
-
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		input, err := reader.ReadString('\n')
