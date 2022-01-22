@@ -7,10 +7,11 @@ import (
 	"strconv"
 
 	"bensivo.com/kcli/internal/args"
+	"bensivo.com/kcli/internal/cluster"
 	"github.com/segmentio/kafka-go"
 )
 
-func ListTopics(cfg args.ClusterArgs) {
+func ListTopics(cfg cluster.ClusterArgs) {
 	bootstrapServer := cfg.BootstrapServer
 	conn, _ := kafka.Dial("tcp", bootstrapServer)
 	defer conn.Close()
@@ -27,8 +28,6 @@ func ListTopics(cfg args.ClusterArgs) {
 }
 
 func CreateTopic(cfg args.CreateTopicArgs) {
-	// to create topics when auto.create.topics.enable='false'
-
 	conn, err := kafka.Dial("tcp", cfg.ClusterArgs.BootstrapServer)
 	if err != nil {
 		panic(err.Error())

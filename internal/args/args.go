@@ -1,21 +1,18 @@
 package args
 
-type ClusterArgs struct {
-	BootstrapServer string
-	Timeout         int64
-}
+import "bensivo.com/kcli/internal/cluster"
 
 type ProducerArgs struct {
 	Topic       string
 	Partition   int
-	ClusterArgs ClusterArgs
+	ClusterArgs cluster.ClusterArgs
 }
 
 type ConsumerArgs struct {
 	Topic       string
 	Partition   int
 	Offset      int
-	ClusterArgs ClusterArgs
+	ClusterArgs cluster.ClusterArgs
 	Exit        bool
 }
 
@@ -23,5 +20,5 @@ type CreateTopicArgs struct {
 	Topic             string
 	Partitions        int
 	ReplicationFactor int
-	ClusterArgs       ClusterArgs
+	ClusterArgs       cluster.ClusterArgs
 }

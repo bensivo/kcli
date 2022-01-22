@@ -11,7 +11,8 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-func Consume(cfg args.ConsumerArgs) {
+func ConsumeV2(cfg args.ConsumerArgs) {
+	// Make an initial connection to the leader to get the current offset
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(cfg.ClusterArgs.Timeout)*time.Second)
 	bootstrapServer := cfg.ClusterArgs.BootstrapServer
 	conn, err := kafka.DialLeader(ctx, "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Write to round-robin partitions
@@ -21,8 +22,11 @@ func Consume(cfg args.ConsumerArgs) {
 	}
 	defer conn.Close()
 
+	// Calculate actual offset position from the given parameter
+	// i.e. offset 0 -> earliest available
+	// 		offset -1 -> latest available - 1
+	var seekPos int
 	if cfg.Offset != 0 {
-		var seekPos int
 		if cfg.Offset > 0 {
 			seekPos = kafka.SeekStart
 		} else {
@@ -36,35 +40,22 @@ func Consume(cfg args.ConsumerArgs) {
 		}
 	}
 
-	last, err := conn.ReadLastOffset()
-	if err != nil {
-		fmt.Println("Failed to read offset", err)
-	}
-	if last == 0 {
-		if cfg.Exit {
-			os.Exit(0)
-		}
-	}
+	// Make another connection to actually read messages from the broker
+	reader := kafka.NewReader(kafka.ReaderConfig{
+		Brokers: []string{bootstrapServer},
+		Topic:   cfg.Topic,
+	})
 
+	reader.SetOffset(int64(seekPos))
 	for {
-		msg, err := conn.ReadMessage(10e6)
+		m, err := reader.ReadMessage(context.Background())
 		if err != nil {
-			fmt.Println("Failed to read message", err)
 			break
 		}
+		fmt.Printf("message at offset %d: %s = %s\n", m.Offset, string(m.Key), string(m.Value))
+	}
 
-		// fmt.Printf("%d: %s\n", msg.Offset, string(msg.Value)) // TODO: Don't actually print offsets
-		fmt.Printf("%s\n", string(msg.Value)) // TODO: Don't actually print offsets
-
-		last, err = conn.ReadLastOffset()
-		if err != nil {
-			fmt.Println("Failed to read offset", err)
-		}
-
-		if msg.Offset == last-1 {
-			if cfg.Exit {
-				os.Exit(0)
-			}
-		}
+	if err := reader.Close(); err != nil {
+		fmt.Println("failed to close reader:", err)
 	}
 }

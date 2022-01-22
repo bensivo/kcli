@@ -7,6 +7,7 @@ package cmd
 import (
 	"bensivo.com/kcli/internal/args"
 	"bensivo.com/kcli/internal/client"
+	"bensivo.com/kcli/internal/cluster"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +27,7 @@ var createCmd = &cobra.Command{
 			Topic:             topic,
 			Partitions:        partitions,
 			ReplicationFactor: replicationFactor,
-			ClusterArgs: args.ClusterArgs{
+			ClusterArgs: cluster.ClusterArgs{
 				BootstrapServer: bootstrapServer,
 				Timeout:         timeoutSec,
 			},
