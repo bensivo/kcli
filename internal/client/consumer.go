@@ -11,7 +11,9 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-func ConsumeV2(cfg args.ConsumerArgs) {
+//  Uses the Reader API instead of the connection API.
+// Allows the user to use consumer groups, but also doesn't
+func Consume(cfg args.ConsumerArgs) {
 	// Make an initial connection to the leader to get the current offset
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(cfg.ClusterArgs.Timeout)*time.Second)
 	bootstrapServer := cfg.ClusterArgs.BootstrapServer
@@ -40,6 +42,14 @@ func ConsumeV2(cfg args.ConsumerArgs) {
 		}
 	}
 
+	var last int64
+	if cfg.Exit {
+		last, err = conn.ReadLastOffset()
+		if err != nil {
+			fmt.Println("Failed to read offset", err)
+		}
+	}
+
 	// Make another connection to actually read messages from the broker
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: []string{bootstrapServer},
@@ -50,9 +60,14 @@ func ConsumeV2(cfg args.ConsumerArgs) {
 	for {
 		m, err := reader.ReadMessage(context.Background())
 		if err != nil {
+			fmt.Println(err)
 			break
 		}
 		fmt.Printf("message at offset %d: %s = %s\n", m.Offset, string(m.Key), string(m.Value))
+
+		if cfg.Exit && m.Offset == last-1 {
+			os.Exit(0)
+		}
 	}
 
 	if err := reader.Close(); err != nil {

@@ -21,15 +21,14 @@ var consumeCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
-		client.ConsumeV2(args.ConsumerArgs{
-			Topic:     topic,
-			Partition: partition,
-			Offset:    offset,
-			Exit:      exit,
-			ClusterArgs: cluster.ClusterArgs{
-				BootstrapServer: bootstrapServer,
-				Timeout:         timeoutSec,
-			},
+		client.Consume(args.ConsumerArgs{
+			Topic:       topic,
+			Partition:   partition,
+			Offset:      offset,
+			Exit:        exit,
+			ClusterArgs: cluster.GetDefaultClusterArgs(),
 		})
 	},
 }
+
+// kcli consume messages -e  0.13s user 0.16s system 5% cpu 5.542 total

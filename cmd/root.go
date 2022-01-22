@@ -12,8 +12,6 @@ var partitions int = 1
 var replicationFactor int = 0
 var offset int = 0
 var exit bool = false
-var bootstrapServer string = "localhost:9092"
-var timeoutSec int64 = 10
 
 var rootCmd = &cobra.Command{
 	Use:   "kcli",

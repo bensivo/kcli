@@ -5,16 +5,15 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
+	"bensivo.com/kcli/internal/cluster"
 	"github.com/spf13/cobra"
 )
 
 var useClusterCmd = &cobra.Command{
 	Use:   "use <cluster>",
-	Short: "Set a cluster as active",
+	Short: "Set a cluster as the default",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Use Cluster called")
+		cluster.UseCluster(cmd.Flags().Arg(0))
 	},
 }
 

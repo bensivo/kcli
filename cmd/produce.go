@@ -19,12 +19,9 @@ var produceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
 		client.Produce(args.ProducerArgs{
-			Topic:     topic,
-			Partition: partition,
-			ClusterArgs: cluster.ClusterArgs{
-				BootstrapServer: bootstrapServer,
-				Timeout:         timeoutSec,
-			},
+			Topic:       topic,
+			Partition:   partition,
+			ClusterArgs: cluster.GetDefaultClusterArgs(),
 		})
 	},
 }
