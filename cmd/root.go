@@ -17,6 +17,7 @@ var connectionTimeout int = 10
 var saslMechanism string = ""
 var saslUsername string = ""
 var saslPassword string = ""
+var clusterName string = ""
 
 var rootCmd = &cobra.Command{
 	Use:   "kcli",
@@ -33,5 +34,4 @@ func Execute() {
 }
 
 func init() {
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kcli.yaml)")
 }

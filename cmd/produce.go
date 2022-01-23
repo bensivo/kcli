@@ -9,6 +9,7 @@ import (
 func init() {
 	rootCmd.AddCommand(produceCmd)
 
+	produceCmd.Flags().StringVarP(&clusterName, "cluster-name", "c", "", "Cluster name")
 	produceCmd.Flags().IntVarP(&partition, "partition", "p", 0, "Partition")
 }
 
@@ -20,7 +21,7 @@ var produceCmd = &cobra.Command{
 		client.Produce(client.ProducerArgs{
 			Topic:       topic,
 			Partition:   partition,
-			ClusterArgs: cluster.GetActiveClusterArgs(),
+			ClusterArgs: cluster.GetClusterArgs(clusterName),
 		})
 	},
 }

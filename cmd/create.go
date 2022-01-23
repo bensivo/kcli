@@ -13,6 +13,7 @@ import (
 func init() {
 	rootCmd.AddCommand(createCmd)
 
+	createCmd.Flags().StringVarP(&clusterName, "cluster-name", "c", "", "Cluster name")
 	createCmd.Flags().IntVarP(&partitions, "partitions", "p", 1, "Number of partitions")
 	createCmd.Flags().IntVarP(&replicationFactor, "replicas", "r", 1, "Replication Factor")
 }
@@ -26,7 +27,7 @@ var createCmd = &cobra.Command{
 			Topic:             topic,
 			Partitions:        partitions,
 			ReplicationFactor: replicationFactor,
-			ClusterArgs:       cluster.GetActiveClusterArgs(),
+			ClusterArgs:       cluster.GetClusterArgs(clusterName),
 		})
 	},
 }

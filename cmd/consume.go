@@ -9,6 +9,7 @@ import (
 func init() {
 	rootCmd.AddCommand(consumeCmd)
 
+	consumeCmd.Flags().StringVarP(&clusterName, "cluster-name", "c", "", "Cluster name")
 	consumeCmd.Flags().IntVarP(&offset, "offset", "o", 0, "Topic offset")
 	consumeCmd.Flags().IntVarP(&partition, "partition", "p", 0, "Partition")
 	consumeCmd.Flags().BoolVarP(&exit, "exit", "e", false, "Exit at end of stream")
@@ -25,7 +26,7 @@ var consumeCmd = &cobra.Command{
 			Partition:   partition,
 			Offset:      offset,
 			Exit:        exit,
-			ClusterArgs: cluster.GetActiveClusterArgs(),
+			ClusterArgs: cluster.GetClusterArgs(clusterName),
 		})
 	},
 }

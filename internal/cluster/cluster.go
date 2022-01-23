@@ -3,6 +3,7 @@ package cluster
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -39,9 +40,23 @@ type KcliConfig struct {
 	Clusters map[string]ClusterArgs
 }
 
-func GetActiveClusterArgs() ClusterArgs {
+func GetClusterArgs(name string) ClusterArgs {
 	config := ReadConfig()
-	return config.Clusters[config.Active]
+
+	var clusterName string
+	if name == "" {
+		clusterName = config.Active
+	} else {
+		clusterName = name
+	}
+
+	args, ok := config.Clusters[clusterName]
+	if !ok {
+		log.Panicf("Cluster \"%s\" not found", clusterName)
+		os.Exit(1)
+	}
+
+	return args
 }
 
 func UseCluster(name string) {
