@@ -5,7 +5,6 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"bensivo.com/kcli/internal/args"
 	"bensivo.com/kcli/internal/client"
 	"bensivo.com/kcli/internal/cluster"
 	"github.com/spf13/cobra"
@@ -23,7 +22,7 @@ var createCmd = &cobra.Command{
 	Short: "Create a topic",
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
-		client.CreateTopic(args.CreateTopicArgs{
+		client.CreateTopic(client.CreateTopicArgs{
 			Topic:             topic,
 			Partitions:        partitions,
 			ReplicationFactor: replicationFactor,

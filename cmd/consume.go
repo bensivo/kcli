@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bensivo.com/kcli/internal/args"
 	"bensivo.com/kcli/internal/client"
 	"bensivo.com/kcli/internal/cluster"
 	"github.com/spf13/cobra"
@@ -21,7 +20,7 @@ var consumeCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
-		client.Consume(args.ConsumerArgs{
+		client.Consume(client.ConsumerArgs{
 			Topic:       topic,
 			Partition:   partition,
 			Offset:      offset,

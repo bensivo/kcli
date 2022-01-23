@@ -11,43 +11,43 @@ go install
 # Ensure that ~/go/bin is in your PATH
 ```
 
+## Setup
+
+### Configure your cluster
+Before you can do any cluster operations, add a cluster with: ``` kcli cluster add ```
+
+Supported flags include:
+- -b, --bootstrap-server
+- -m, --sasl-mechanism 
+- -p, --sasl-password
+- -u, --sasl-username
+
+Example: 
+```
+kcli  cluster add my-local-cluster -b localhost:9092 -t 10 -m plain -u my-user -p my-password
+```
+
+You can configure multiple kafka clusters at once. kcli offers a few commands to manage them: 
+- View your configured clusters: `kcli cluster list`
+- Switch your active cluster: `kcli cluster use <name>`
+- Delete a cluster configuration: `kcli cluster remove <name>`
+
 ## Usage
-### Topics
-List topics with:
-```
-kcli list
-```
+Topic Operations:
+- List all topics and partitions: `kcli list`
+- Create a new topic: `kcli create <topic> -p <partitions> -r <replication factor>`
 
-Create a topic with:
-```
-kcli create <topic name> -p <partitions> -r <replication factor>
-```
+Consume messages:
+- Read all messages: ```kcli consume <topic>```
+- Read from a specific partition: ```kcli consume <topic> -p 1```
+    - By default, kcli uses partition 0
+- Read starting at the 10th message: ```kcli consume <topic> -o 10```
+- Read the last 10 messages: ```kcli consume <topic> -o -10```
 
-### Consume messages
-```
-kcli consume <topic> -p <partition> -o <offset>
-```
-By default, kcli uses partition 0 and the earliest available offset.
-
-Specifying offsets
-```
-kcli consume <topic> -o 20
-// Starting at offset 20, get all messages on partition 0
-
-kcli consume <topic> -o -2
-// Get the last 2 messages on partition 0
-```
-
-### Produce messages
-```
-kcli produce <topic> -p <partition>
-// Type your message and press 'enter' to publish
-```
-
-You can also pipe messages in from stdin, separated by newlines
-```
-echo "My Message" | kcli produce <topic>
-```
+Produce messages:
+- Interactive: ```kcli produce <topic> -p <partition>```
+    - Listens for input from stdin. Each newline sends a new message
+- Non-Interactive: ```echo "my message here" | kcli produce <topic> -p <partition>```
 
 ## Development
 ### Run tests

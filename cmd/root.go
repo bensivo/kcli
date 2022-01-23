@@ -12,6 +12,11 @@ var partitions int = 1
 var replicationFactor int = 0
 var offset int = 0
 var exit bool = false
+var bootstrapServer string = ""
+var connectionTimeout int = 10
+var saslMechanism string = ""
+var saslUsername string = ""
+var saslPassword string = ""
 
 var rootCmd = &cobra.Command{
 	Use:   "kcli",

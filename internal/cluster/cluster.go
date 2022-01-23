@@ -11,6 +11,10 @@ import (
 type ClusterArgs struct {
 	BootstrapServer string
 	Timeout         int64
+
+	SaslMechanism string
+	SaslUsername  string
+	SaslPassword  string
 }
 
 type KcliConfig struct {

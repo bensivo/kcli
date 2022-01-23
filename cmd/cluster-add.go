@@ -15,8 +15,11 @@ var addClusterCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, arguments []string) {
 		name := cmd.Flags().Arg(0)
 		cluster.AddCluster(name, cluster.ClusterArgs{
-			BootstrapServer: "localhost:9092",
-			Timeout:         10,
+			BootstrapServer: bootstrapServer,
+			Timeout:         int64(connectionTimeout),
+			SaslMechanism:   saslMechanism,
+			SaslUsername:    saslUsername,
+			SaslPassword:    saslPassword,
 		})
 	},
 }
@@ -25,5 +28,8 @@ func init() {
 	clusterCmd.AddCommand(addClusterCmd)
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// addClusterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	addClusterCmd.Flags().StringVarP(&bootstrapServer, "bootstrap-server", "b", "localhost:9092", "Bootstrap Server")
+	addClusterCmd.Flags().StringVarP(&saslMechanism, "sasl-mechanism", "m", "", "Sasl Mechanism")
+	addClusterCmd.Flags().StringVarP(&saslUsername, "sasl-username", "u", "", "Sasl Username")
+	addClusterCmd.Flags().StringVarP(&saslPassword, "sasl-password", "p", "", "Sasl Password")
 }

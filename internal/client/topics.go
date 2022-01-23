@@ -2,18 +2,14 @@ package client
 
 import (
 	"fmt"
-	"net"
 	"os"
-	"strconv"
 
-	"bensivo.com/kcli/internal/args"
 	"bensivo.com/kcli/internal/cluster"
 	"github.com/segmentio/kafka-go"
 )
 
 func ListTopics(cfg cluster.ClusterArgs) {
-	bootstrapServer := cfg.BootstrapServer
-	conn, _ := kafka.Dial("tcp", bootstrapServer)
+	conn := Dial(cfg)
 	defer conn.Close()
 
 	partitions, err := conn.ReadPartitions()
@@ -27,23 +23,17 @@ func ListTopics(cfg cluster.ClusterArgs) {
 	}
 }
 
-func CreateTopic(cfg args.CreateTopicArgs) {
-	conn, err := kafka.Dial("tcp", cfg.ClusterArgs.BootstrapServer)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer conn.Close()
+type CreateTopicArgs struct {
+	Topic             string
+	Partitions        int
+	ReplicationFactor int
+	ClusterArgs       cluster.ClusterArgs
+}
 
-	controller, err := conn.Controller()
-	if err != nil {
-		panic(err.Error())
-	}
-	var controllerConn *kafka.Conn
-	controllerConn, err = kafka.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
-	if err != nil {
-		panic(err.Error())
-	}
-	defer controllerConn.Close()
+func CreateTopic(cfg CreateTopicArgs) {
+	fmt.Printf("Creating topic %s with %d partitions, %d replicas\n", cfg.Topic, cfg.Partitions, cfg.ReplicationFactor)
+	conn := Dial(cfg.ClusterArgs)
+	defer conn.Close()
 
 	topicArgss := []kafka.TopicConfig{
 		{
@@ -53,8 +43,9 @@ func CreateTopic(cfg args.CreateTopicArgs) {
 		},
 	}
 
-	err = controllerConn.CreateTopics(topicArgss...)
+	err := conn.CreateTopics(topicArgss...)
 	if err != nil {
 		panic(err.Error())
 	}
+	fmt.Printf("Topic %s created successfully\n", cfg.Topic)
 }

@@ -2,24 +2,22 @@ package client
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"io"
 	"os"
-	"time"
 
-	"bensivo.com/kcli/internal/args"
+	"bensivo.com/kcli/internal/cluster"
 	"github.com/segmentio/kafka-go"
 )
 
-func Produce(cfg args.ProducerArgs) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Duration(cfg.ClusterArgs.Timeout)*time.Second)
-	bootstrapServer := cfg.ClusterArgs.BootstrapServer
-	conn, err := kafka.DialLeader(ctx, "tcp", bootstrapServer, cfg.Topic, cfg.Partition) // TODO: Read from all partitions
-	if err != nil {
-		fmt.Println("Failed to dial leader", err)
-		os.Exit(1)
-	}
+type ProducerArgs struct {
+	Topic       string
+	Partition   int
+	ClusterArgs cluster.ClusterArgs
+}
+
+func Produce(cfg ProducerArgs) {
+	conn := DialLeader(cfg.ClusterArgs, cfg.Topic, cfg.Partition)
 	defer conn.Close()
 
 	reader := bufio.NewReader(os.Stdin)
