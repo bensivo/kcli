@@ -1,6 +1,11 @@
 # kcli
 A kafka client written in go.
 
+------------
+THIS IS A WORK IN PROGRESS - Expect bugs, and changing interfaces for the near future
+
+------------
+
 ## Installation
 To install kcli, checkout this repo and build it from scratch:
 ```
