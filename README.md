@@ -35,6 +35,7 @@ kcli  cluster add my-local-cluster -b localhost:9092 -t 10 -m plain -u my-user -
 You can configure multiple kafka clusters at once. kcli offers a few commands to manage them: 
 - View your configured clusters: `kcli cluster list`
 - Switch your active cluster: `kcli cluster use <name>`
+    - Or add the --cluster-name, -c flag to manually specify a cluster: `kcli consume my-topic --cluster-name=localhost`
 - Delete a cluster configuration: `kcli cluster remove <name>`
 
 ## Usage
