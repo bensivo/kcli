@@ -26,7 +26,7 @@ var createCmd = &cobra.Command{
 			Topic:             topic,
 			Partitions:        partitions,
 			ReplicationFactor: replicationFactor,
-			ClusterArgs:       cluster.GetDefaultClusterArgs(),
+			ClusterArgs:       cluster.GetActiveClusterArgs(),
 		})
 	},
 }

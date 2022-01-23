@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -17,12 +18,28 @@ type ClusterArgs struct {
 	SaslPassword  string
 }
 
+func getConfigFilepath() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println("Could not determine user home directory")
+		os.Exit(1)
+	}
+
+	err = os.MkdirAll(filepath.Join(home, ".kcli"), os.ModePerm)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return filepath.Join(home, ".kcli", "clusters.conf")
+}
+
 type KcliConfig struct {
 	Active   string
 	Clusters map[string]ClusterArgs
 }
 
-func GetDefaultClusterArgs() ClusterArgs {
+func GetActiveClusterArgs() ClusterArgs {
 	config := ReadConfig()
 	return config.Clusters[config.Active]
 }
@@ -60,7 +77,7 @@ func ListClusters() {
 	config := ReadConfig()
 	for clusterName := range config.Clusters {
 		if clusterName == config.Active {
-			fmt.Printf("  - %s (Default)\n", clusterName)
+			fmt.Printf("  - %s (Active)\n", clusterName)
 		} else {
 			fmt.Printf("  - %s\n", clusterName)
 		}
@@ -68,7 +85,7 @@ func ListClusters() {
 }
 
 func ReadConfig() KcliConfig {
-	bytes, err := os.ReadFile("kcli.yaml")
+	bytes, err := os.ReadFile(getConfigFilepath())
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		fmt.Println("Error reading kcli file", err)
 		os.Exit(1)
@@ -96,5 +113,5 @@ func WriteConfig(config KcliConfig) {
 		os.Exit(1)
 	}
 
-	os.WriteFile("kcli.yaml", bytes, 0666)
+	os.WriteFile(getConfigFilepath(), bytes, 0666)
 }

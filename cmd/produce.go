@@ -20,7 +20,7 @@ var produceCmd = &cobra.Command{
 		client.Produce(client.ProducerArgs{
 			Topic:       topic,
 			Partition:   partition,
-			ClusterArgs: cluster.GetDefaultClusterArgs(),
+			ClusterArgs: cluster.GetActiveClusterArgs(),
 		})
 	},
 }

@@ -25,7 +25,7 @@ var consumeCmd = &cobra.Command{
 			Partition:   partition,
 			Offset:      offset,
 			Exit:        exit,
-			ClusterArgs: cluster.GetDefaultClusterArgs(),
+			ClusterArgs: cluster.GetActiveClusterArgs(),
 		})
 	},
 }
