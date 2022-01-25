@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 
-	"bensivo.com/kcli/internal/cluster"
 	"github.com/segmentio/kafka-go"
+	"gitlab.com/bensivo/kcli/internal/cluster"
 )
 
 type ProducerArgs struct {

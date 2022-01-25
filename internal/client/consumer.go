@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"bensivo.com/kcli/internal/cluster"
-	"bensivo.com/kcli/internal/util"
 	"github.com/segmentio/kafka-go"
+	"gitlab.com/bensivo/kcli/internal/cluster"
+	"gitlab.com/bensivo/kcli/internal/util"
 )
 
 type ConsumerArgs struct {

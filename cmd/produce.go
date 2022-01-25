@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"bensivo.com/kcli/internal/client"
-	"bensivo.com/kcli/internal/cluster"
 	"github.com/spf13/cobra"
+	"gitlab.com/bensivo/kcli/internal/client"
+	"gitlab.com/bensivo/kcli/internal/cluster"
 )
 
 func init() {

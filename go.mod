@@ -1,4 +1,4 @@
-module bensivo.com/kcli
+module gitlab.com/bensivo/kcli
 
 go 1.17
 

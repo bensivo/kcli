@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"bensivo.com/kcli/internal/cluster"
 	"github.com/segmentio/kafka-go"
+	"gitlab.com/bensivo/kcli/internal/cluster"
 )
 
 func ListTopics(cfg cluster.ClusterArgs) {

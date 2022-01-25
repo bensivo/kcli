@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"bensivo.com/kcli/internal/cluster"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/plain"
+	"gitlab.com/bensivo/kcli/internal/cluster"
 )
 
 func GetDialer(cfg cluster.ClusterArgs) *kafka.Dialer {

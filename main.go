@@ -1,6 +1,6 @@
 package main
 
-import "bensivo.com/kcli/cmd"
+import "gitlab.com/bensivo/kcli/cmd"
 
 func main() {
 	cmd.Execute()
