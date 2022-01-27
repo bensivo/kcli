@@ -16,6 +16,7 @@ func init() {
 var produceCmd = &cobra.Command{
 	Use:   "produce <topic>",
 	Short: "Produce messages to a topic",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
 		client.Produce(client.ProducerArgs{

@@ -12,6 +12,7 @@ import (
 var addClusterCmd = &cobra.Command{
 	Use:   "add <name> ",
 	Short: "Add a new kafka cluster",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		name := cmd.Flags().Arg(0)
 		cluster.AddCluster(name, cluster.ClusterArgs{

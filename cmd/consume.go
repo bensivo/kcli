@@ -18,7 +18,7 @@ func init() {
 var consumeCmd = &cobra.Command{
 	Use:   "consume <topic>",
 	Short: "Consume messages fromn a topic",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
 		client.Consume(client.ConsumerArgs{
@@ -30,5 +30,3 @@ var consumeCmd = &cobra.Command{
 		})
 	},
 }
-
-// kcli consume messages -e  0.13s user 0.16s system 5% cpu 5.542 total

@@ -21,6 +21,7 @@ func init() {
 var createCmd = &cobra.Command{
 	Use:   "create <topic>",
 	Short: "Create a topic",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
 		client.CreateTopic(client.CreateTopicArgs{

@@ -12,6 +12,7 @@ import (
 var removeClusterCmd = &cobra.Command{
 	Use:   "remove <name>",
 	Short: "Remove a kafka cluster",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		cluster.RemoveCluster(cmd.Flags().Arg(0))
 	},
