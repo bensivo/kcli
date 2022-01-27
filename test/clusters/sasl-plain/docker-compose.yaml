@@ -22,6 +22,6 @@ services:
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./sasl-plain.conf:/etc/kafka/jaas.conf
+      - ./jaas.conf:/etc/kafka/jaas.conf
     depends_on:
       - 'zookeeper'

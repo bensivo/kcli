@@ -8,21 +8,46 @@ import (
 	"time"
 
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl"
 	"github.com/segmentio/kafka-go/sasl/plain"
+	"github.com/segmentio/kafka-go/sasl/scram"
 	"gitlab.com/bensivo/kcli/internal/cluster"
 )
+
+func GetSaslMechanism(cfg cluster.ClusterArgs) sasl.Mechanism {
+	if strings.ToLower(cfg.SaslMechanism) == "plain" {
+		return plain.Mechanism{
+			Username: cfg.SaslUsername,
+			Password: cfg.SaslPassword,
+		}
+	}
+	if strings.ToLower(cfg.SaslMechanism) == "scram-sha-512" {
+		mechanism, err := scram.Mechanism(scram.SHA512, cfg.SaslUsername, cfg.SaslPassword)
+		if err != nil {
+			fmt.Println("Error configuring scram-sha-512 auth")
+			os.Exit(1)
+		}
+		return mechanism
+	}
+	if strings.ToLower(cfg.SaslMechanism) == "scram-sha-256" {
+		mechanism, err := scram.Mechanism(scram.SHA256, cfg.SaslUsername, cfg.SaslPassword)
+		if err != nil {
+			fmt.Println("Error configuring scram-sha-256 auth")
+			os.Exit(1)
+		}
+		return mechanism
+	}
+
+	return nil
+}
 
 func GetDialer(cfg cluster.ClusterArgs) *kafka.Dialer {
 	fmt.Println("Connecting to cluster " + cfg.BootstrapServer)
 
 	dialer := &kafka.Dialer{
-		Timeout: time.Second * 10,
-	}
-	if strings.ToLower(cfg.SaslMechanism) == "plain" {
-		dialer.SASLMechanism = plain.Mechanism{
-			Username: cfg.SaslUsername,
-			Password: cfg.SaslPassword,
-		}
+		Timeout:       time.Second * 10,
+		DualStack:     true,
+		SASLMechanism: GetSaslMechanism(cfg),
 	}
 	return dialer
 }
