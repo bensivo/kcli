@@ -26,6 +26,9 @@ Supported flags include:
 - -m, --sasl-mechanism  (supports 'plain', 'scram-sha-256', 'scram-sha-512')
 - -p, --sasl-password
 - -u, --sasl-username
+- --ssl Enable TLS / SSL
+- --ssl-ca Filepath to ca-certficate PEM file
+- --ssl-skip-verification Turn off certificate-chain and hostname verification
 
 Example: 
 ```

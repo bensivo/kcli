@@ -1,3 +1,8 @@
+### NOTES: 
+# Before running, make sure you're using jdk8 (because that's what the wurstmeister kafka images use)
+# Before running, make sure you run 'ca_authority.sh'
+# Based on: https://github.com/jinternals/kafka_ssl_setup/blob/master/Part%201/
+
 mkdir -p "$(dirname $0)/server_certs"
 cd "$(dirname $0)/server_certs"
 

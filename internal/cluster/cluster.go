@@ -17,6 +17,10 @@ type ClusterArgs struct {
 	SaslMechanism string
 	SaslUsername  string
 	SaslPassword  string
+
+	SSLEnabled           bool
+	SSLCaCertificatePath string
+	SSLSkipVerification  bool
 }
 
 func getConfigFilepath() string {

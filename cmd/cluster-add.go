@@ -21,6 +21,10 @@ var addClusterCmd = &cobra.Command{
 			SaslMechanism:   saslMechanism,
 			SaslUsername:    saslUsername,
 			SaslPassword:    saslPassword,
+
+			SSLEnabled:           sslEnabled,
+			SSLCaCertificatePath: sslCaCertificatePath,
+			SSLSkipVerification:  sslSkipVerification,
 		})
 	},
 }
@@ -33,4 +37,7 @@ func init() {
 	addClusterCmd.Flags().StringVarP(&saslMechanism, "sasl-mechanism", "m", "", "Sasl Mechanism")
 	addClusterCmd.Flags().StringVarP(&saslUsername, "sasl-username", "u", "", "Sasl Username")
 	addClusterCmd.Flags().StringVarP(&saslPassword, "sasl-password", "p", "", "Sasl Password")
+	addClusterCmd.Flags().BoolVarP(&sslEnabled, "ssl", "", false, "SSL Enabled")
+	addClusterCmd.Flags().StringVarP(&sslCaCertificatePath, "ssl-ca", "", "", "CA")
+	addClusterCmd.Flags().BoolVarP(&sslSkipVerification, "ssl-skip-verification", "", false, "Skip Verification")
 }

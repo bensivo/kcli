@@ -45,6 +45,33 @@ func GetSaslMechanism(cfg cluster.ClusterArgs) sasl.Mechanism {
 	return nil
 }
 
+func GetTLSConfig(cfg cluster.ClusterArgs) *tls.Config {
+	if !cfg.SSLEnabled {
+		return nil
+	}
+
+	var tlsConfig tls.Config = tls.Config{
+		Certificates: []tls.Certificate{},
+	}
+
+	if cfg.SSLCaCertificatePath != "" {
+		caCert, err := ioutil.ReadFile("./test/clusters/ssl/ca_authority/ca-cert")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		caCertPool := x509.NewCertPool()
+		caCertPool.AppendCertsFromPEM(caCert)
+		tlsConfig.RootCAs = caCertPool
+	}
+
+	if cfg.SSLSkipVerification {
+		tlsConfig.InsecureSkipVerify = true
+	}
+
+	return &tlsConfig
+}
+
 func GetDialer(cfg cluster.ClusterArgs) *kafka.Dialer {
 	fmt.Println("Connecting to cluster " + cfg.BootstrapServer)
 
@@ -52,25 +79,9 @@ func GetDialer(cfg cluster.ClusterArgs) *kafka.Dialer {
 		Timeout:       time.Second * 10,
 		DualStack:     true,
 		SASLMechanism: GetSaslMechanism(cfg),
-		TLS:           tlsConfig(),
+		TLS:           GetTLSConfig(cfg),
 	}
 	return dialer
-}
-
-func tlsConfig() *tls.Config {
-	caCert, err := ioutil.ReadFile("./test/clusters/ssl/ca_authority/ca-cert")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(caCert)
-
-	config := &tls.Config{
-		Certificates: []tls.Certificate{},
-		RootCAs:      caCertPool,
-	}
-	return config
 }
 
 func Dial(cfg cluster.ClusterArgs) *kafka.Conn {

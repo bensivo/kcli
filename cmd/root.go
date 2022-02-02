@@ -18,6 +18,9 @@ var saslMechanism string = ""
 var saslUsername string = ""
 var saslPassword string = ""
 var clusterName string = ""
+var sslEnabled bool = false
+var sslSkipVerification bool = false
+var sslCaCertificatePath string = ""
 
 var rootCmd = &cobra.Command{
 	Use:   "kcli",
