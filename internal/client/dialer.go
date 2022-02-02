@@ -2,7 +2,11 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -48,8 +52,25 @@ func GetDialer(cfg cluster.ClusterArgs) *kafka.Dialer {
 		Timeout:       time.Second * 10,
 		DualStack:     true,
 		SASLMechanism: GetSaslMechanism(cfg),
+		TLS:           tlsConfig(),
 	}
 	return dialer
+}
+
+func tlsConfig() *tls.Config {
+	caCert, err := ioutil.ReadFile("./test/clusters/ssl/ca_authority/ca-cert")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	config := &tls.Config{
+		Certificates: []tls.Certificate{},
+		RootCAs:      caCertPool,
+	}
+	return config
 }
 
 func Dial(cfg cluster.ClusterArgs) *kafka.Conn {

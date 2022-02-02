@@ -1,0 +1,29 @@
+version: '3.5'
+
+services:
+
+  zookeeper:
+    image: "wurstmeister/zookeeper"
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_LISTENERS: 'SSL://:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'SSL://localhost:9092'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_SSL_KEYSTORE_LOCATION: '/certs/kafka.server.keystore.jks'
+      KAFKA_SSL_KEYSTORE_PASSWORD: 'password'
+      KAFKA_SSL_KEY_PASSWORD: 'password'
+      KAFKA_SSL_TRUSTSTORE_LOCATION: '/certs/kafka.server.truststore.jks'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: 'password'
+      # KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
+      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: 'SSL'
+    volumes:
+      - ./server_certs:/certs

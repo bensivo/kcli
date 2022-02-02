@@ -23,7 +23,7 @@ Before you can do any cluster operations, add a cluster with: ``` kcli cluster a
 
 Supported flags include:
 - -b, --bootstrap-server
-- -m, --sasl-mechanism 
+- -m, --sasl-mechanism  (supports 'plain', 'scram-sha-256', 'scram-sha-512')
 - -p, --sasl-password
 - -u, --sasl-username
 
