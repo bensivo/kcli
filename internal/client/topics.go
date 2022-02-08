@@ -8,7 +8,12 @@ import (
 	"gitlab.com/bensivo/kcli/internal/cluster"
 )
 
-func ListTopics(cfg cluster.ClusterArgs) {
+type TopicMetadata struct {
+	Name          string
+	NumPartitions int
+}
+
+func ListTopics(cfg cluster.ClusterArgs) map[string]TopicMetadata {
 	conn := Dial(cfg)
 	defer conn.Close()
 
@@ -18,9 +23,24 @@ func ListTopics(cfg cluster.ClusterArgs) {
 		os.Exit(1)
 	}
 
-	for _, p := range partitions {
-		fmt.Println(p.Topic, p.ID)
+	topics := make(map[string]TopicMetadata)
+	for _, partition := range partitions {
+		name := partition.Topic
+
+		topic, exists := topics[name]
+		if !exists {
+			topics[name] = TopicMetadata{
+				Name:          name,
+				NumPartitions: 1,
+			}
+			continue
+		} else {
+			topic.NumPartitions++
+			topics[name] = topic
+		}
 	}
+
+	return topics
 }
 
 type CreateTopicArgs struct {

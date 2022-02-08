@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"sync"
+
 	"github.com/spf13/cobra"
 	"gitlab.com/bensivo/kcli/internal/client"
 	"gitlab.com/bensivo/kcli/internal/cluster"
@@ -21,12 +23,25 @@ var consumeCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
-		client.Consume(client.ConsumerArgs{
-			Topic:       topic,
-			Partition:   partition,
-			Offset:      offset,
-			Exit:        exit,
-			ClusterArgs: cluster.GetClusterArgs(clusterName),
-		})
+
+		if partition == 0 {
+			client.ConsumeAllPartitions(client.ConsumeManyArgs{
+				Topic:       topic,
+				Offset:      offset,
+				Exit:        exit,
+				ClusterArgs: cluster.GetClusterArgs(clusterName),
+			})
+		} else {
+			var wg sync.WaitGroup
+			wg.Add(1)
+			go client.Consume(&wg, client.ConsumeArgs{
+				Topic:       topic,
+				Partition:   partition,
+				Offset:      offset,
+				Exit:        exit,
+				ClusterArgs: cluster.GetClusterArgs(clusterName),
+			})
+			wg.Wait()
+		}
 	},
 }

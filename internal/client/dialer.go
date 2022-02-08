@@ -73,8 +73,6 @@ func GetTLSConfig(cfg cluster.ClusterArgs) *tls.Config {
 }
 
 func GetDialer(cfg cluster.ClusterArgs) *kafka.Dialer {
-	fmt.Println("Connecting to cluster " + cfg.BootstrapServer)
-
 	dialer := &kafka.Dialer{
 		Timeout:       time.Second * 10,
 		DualStack:     true,
@@ -99,7 +97,6 @@ func Dial(cfg cluster.ClusterArgs) *kafka.Conn {
 func DialLeader(cfg cluster.ClusterArgs, topic string, partition int) *kafka.Conn {
 	dialer := GetDialer(cfg)
 
-	fmt.Printf("Dialing leader for %s:%s:%d\n", cfg.BootstrapServer, topic, partition)
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(cfg.Timeout)*time.Second)
 	conn, err := dialer.DialLeader(ctx, "tcp", cfg.BootstrapServer, topic, partition)
 	if err != nil {

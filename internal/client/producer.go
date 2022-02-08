@@ -34,14 +34,12 @@ func Produce(cfg ProducerArgs) {
 
 		message := input[:len(input)-1]
 
-		res, err := conn.WriteMessages(
+		_, err = conn.WriteMessages(
 			kafka.Message{Value: []byte(message)},
 		)
 		if err != nil {
 			fmt.Println("Failed to write messages", err)
 			os.Exit(1)
 		}
-
-		fmt.Println(res)
 	}
 }

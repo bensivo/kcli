@@ -2,14 +2,41 @@ package client
 
 import (
 	"fmt"
-	"os"
+	"sync"
 
 	"github.com/segmentio/kafka-go"
 	"gitlab.com/bensivo/kcli/internal/cluster"
 	"gitlab.com/bensivo/kcli/internal/util"
 )
 
-type ConsumerArgs struct {
+type ConsumeManyArgs struct {
+	Topic       string
+	Partitions  []int
+	Offset      int
+	ClusterArgs cluster.ClusterArgs
+	Exit        bool
+}
+
+func ConsumeAllPartitions(cfg ConsumeManyArgs) {
+	topics := ListTopics(cfg.ClusterArgs)
+	numPartitions := topics[cfg.Topic].NumPartitions
+
+	var wg sync.WaitGroup
+	for i := 0; i < numPartitions; i++ {
+		wg.Add(1)
+		go Consume(&wg, ConsumeArgs{
+			Topic:       cfg.Topic,
+			Partition:   i,
+			Offset:      cfg.Offset,
+			ClusterArgs: cfg.ClusterArgs,
+			Exit:        cfg.Exit,
+		})
+	}
+
+	wg.Wait()
+}
+
+type ConsumeArgs struct {
 	Topic       string
 	Partition   int
 	Offset      int
@@ -17,7 +44,9 @@ type ConsumerArgs struct {
 	Exit        bool
 }
 
-func Consume(cfg ConsumerArgs) {
+func Consume(wg *sync.WaitGroup, cfg ConsumeArgs) {
+	defer wg.Done()
+
 	conn := DialLeader(cfg.ClusterArgs, cfg.Topic, cfg.Partition)
 	defer conn.Close()
 
@@ -44,7 +73,7 @@ func Consume(cfg ConsumerArgs) {
 	}
 	if last == 0 {
 		if cfg.Exit {
-			os.Exit(0)
+			return
 		}
 	}
 
@@ -66,7 +95,7 @@ func Consume(cfg ConsumerArgs) {
 
 		if msg.Offset == last-1 {
 			if cfg.Exit {
-				os.Exit(0)
+				return
 			}
 		}
 	}
