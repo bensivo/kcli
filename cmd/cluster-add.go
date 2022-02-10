@@ -10,9 +10,10 @@ import (
 )
 
 var addClusterCmd = &cobra.Command{
-	Use:   "add <name> ",
-	Short: "Add a new kafka cluster",
-	Args:  cobra.ExactArgs(1),
+	Aliases: []string{"a"},
+	Use:     "add <name>",
+	Short:   "('a') Add a new kafka cluster",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		name := cmd.Flags().Arg(0)
 		cluster.AddCluster(name, cluster.ClusterArgs{
@@ -31,8 +32,6 @@ var addClusterCmd = &cobra.Command{
 
 func init() {
 	clusterCmd.AddCommand(addClusterCmd)
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	addClusterCmd.Flags().StringVarP(&bootstrapServer, "bootstrap-server", "b", "localhost:9092", "Bootstrap Server")
 	addClusterCmd.Flags().StringVarP(&saslMechanism, "sasl-mechanism", "m", "", "Sasl Mechanism")
 	addClusterCmd.Flags().StringVarP(&saslUsername, "sasl-username", "u", "", "Sasl Username")
@@ -40,4 +39,5 @@ func init() {
 	addClusterCmd.Flags().BoolVarP(&sslEnabled, "ssl", "", false, "SSL Enabled")
 	addClusterCmd.Flags().StringVarP(&sslCaCertificatePath, "ssl-ca", "", "", "CA")
 	addClusterCmd.Flags().BoolVarP(&sslSkipVerification, "ssl-skip-verification", "", false, "Skip Verification")
+
 }

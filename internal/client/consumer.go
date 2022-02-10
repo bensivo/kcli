@@ -71,7 +71,10 @@ func Consume(wg *sync.WaitGroup, cfg ConsumeArgs) {
 	if err != nil {
 		fmt.Println("Failed to read offset", err)
 	}
+
+	// No messages on the topic
 	if last == 0 {
+		fmt.Println("End of partition", cfg.Partition, "at offset", last)
 		if cfg.Exit {
 			return
 		}
@@ -94,6 +97,7 @@ func Consume(wg *sync.WaitGroup, cfg ConsumeArgs) {
 		// }
 
 		if msg.Offset == last-1 {
+			fmt.Println("End of partition", cfg.Partition, "at offset", last)
 			if cfg.Exit {
 				return
 			}

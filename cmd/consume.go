@@ -18,9 +18,10 @@ func init() {
 }
 
 var consumeCmd = &cobra.Command{
-	Use:   "consume <topic>",
-	Short: "Consume messages fromn a topic",
-	Args:  cobra.ExactArgs(1),
+	Aliases: []string{"c"},
+	Use:     "consume <topic>",
+	Short:   "('c') Consume messages fromn a topic",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
 

@@ -7,7 +7,13 @@ THIS IS A WORK IN PROGRESS - Expect bugs, and changing interfaces for the near f
 ------------
 
 ## Installation
-To install kcli, checkout this repo and build it from scratch:
+To install kcli, just use go install:
+```
+go install gitlab.com/bensivo/kcli@latest
+```
+
+
+Or checkout this repo and build it from scratch:
 ```
 git clone https://gitlab.com/bensivo/kcli.git
 cd kcli

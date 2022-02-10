@@ -10,8 +10,9 @@ import (
 )
 
 var listClustersCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List kafka clusters",
+	Aliases: []string{"ls"},
+	Use:     "list",
+	Short:   "('ls') List kafka clusters",
 	Run: func(cmd *cobra.Command, args []string) {
 		cluster.ListClusters()
 	},

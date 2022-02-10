@@ -9,8 +9,9 @@ import (
 )
 
 var clusterCmd = &cobra.Command{
-	Use:   "cluster",
-	Short: "Manage multiple kafka clusters",
+	Aliases: []string{"cl"},
+	Use:     "cluster",
+	Short:   "('cl') Manage multiple kafka clusters",
 }
 
 func init() {

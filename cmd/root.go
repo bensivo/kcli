@@ -25,6 +25,9 @@ var sslCaCertificatePath string = ""
 var rootCmd = &cobra.Command{
 	Use:   "kcli",
 	Short: "A simple command line client for kafka",
+	CompletionOptions: cobra.CompletionOptions{
+		HiddenDefaultCmd: true,
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -37,4 +40,8 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.SetHelpCommand(&cobra.Command{
+		Use:    "no-help",
+		Hidden: true,
+	})
 }

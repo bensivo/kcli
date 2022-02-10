@@ -13,14 +13,15 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(listCmd)
+	topicCmd.AddCommand(topicListCmd)
 
-	listCmd.Flags().StringVarP(&clusterName, "cluster-name", "c", "", "Cluster name")
+	topicListCmd.Flags().StringVarP(&clusterName, "cluster-name", "c", "", "Cluster name")
 }
 
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List topics, partition counts, and current offsets",
+var topicListCmd = &cobra.Command{
+	Aliases: []string{"ls"},
+	Use:     "list",
+	Short:   "('ls') List topics, partition counts, and current offsets",
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topics := client.ListTopics(cluster.GetClusterArgs(clusterName))
 		for _, t := range topics {

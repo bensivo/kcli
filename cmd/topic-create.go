@@ -11,17 +11,18 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(createCmd)
+	topicCmd.AddCommand(topicCreateCmd)
 
-	createCmd.Flags().StringVarP(&clusterName, "cluster-name", "c", "", "Cluster name")
-	createCmd.Flags().IntVarP(&partitions, "partitions", "p", 1, "Number of partitions")
-	createCmd.Flags().IntVarP(&replicationFactor, "replicas", "r", 1, "Replication Factor")
+	topicCreateCmd.Flags().StringVarP(&clusterName, "cluster-name", "c", "", "Cluster name")
+	topicCreateCmd.Flags().IntVarP(&partitions, "partitions", "p", 1, "Number of partitions")
+	topicCreateCmd.Flags().IntVarP(&replicationFactor, "replicas", "r", 1, "Replication Factor")
 }
 
-var createCmd = &cobra.Command{
-	Use:   "create <topic>",
-	Short: "Create a topic",
-	Args:  cobra.ExactArgs(1),
+var topicCreateCmd = &cobra.Command{
+	Aliases: []string{"c"},
+	Use:     "create <topic>",
+	Short:   "('c') Create a topic",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
 		client.CreateTopic(client.CreateTopicArgs{
