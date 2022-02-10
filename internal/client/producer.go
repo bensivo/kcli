@@ -1,9 +1,8 @@
 package client
 
 import (
-	"bufio"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"os"
 
 	"github.com/segmentio/kafka-go"
@@ -14,32 +13,35 @@ type ProducerArgs struct {
 	Topic       string
 	Partition   int
 	ClusterArgs cluster.ClusterArgs
+	Filepath    string
 }
 
 func Produce(cfg ProducerArgs) {
 	conn := DialLeader(cfg.ClusterArgs, cfg.Topic, cfg.Partition)
 	defer conn.Close()
 
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		input, err := reader.ReadString('\n')
-		if err == io.EOF {
-			os.Exit(0)
-		}
+	var bytes []byte
+	var err error
 
+	if cfg.Filepath == "" {
+		bytes, err = ioutil.ReadAll(os.Stdin)
 		if err != nil {
 			fmt.Println("Failed to read input", err)
 			os.Exit(1)
 		}
-
-		message := input[:len(input)-1]
-
-		_, err = conn.WriteMessages(
-			kafka.Message{Value: []byte(message)},
-		)
+	} else {
+		bytes, err = ioutil.ReadFile(cfg.Filepath)
 		if err != nil {
-			fmt.Println("Failed to write messages", err)
+			fmt.Println("Failed to read file", err)
 			os.Exit(1)
 		}
+	}
+
+	_, err = conn.WriteMessages(
+		kafka.Message{Value: bytes},
+	)
+	if err != nil {
+		fmt.Println("Failed to write messages", err)
+		os.Exit(1)
 	}
 }

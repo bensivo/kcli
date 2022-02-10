@@ -17,13 +17,15 @@ var produceCmd = &cobra.Command{
 	Aliases: []string{"p"},
 	Use:     "produce <topic>",
 	Short:   "('p') Produce messages to a topic",
-	Args:    cobra.ExactArgs(1),
+	Args:    cobra.RangeArgs(1, 2),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		topic := cmd.Flags().Arg(0)
+		filepath := cmd.Flags().Arg(1)
 		client.Produce(client.ProducerArgs{
 			Topic:       topic,
 			Partition:   partition,
 			ClusterArgs: cluster.GetClusterArgs(clusterName),
+			Filepath:    filepath,
 		})
 	},
 }

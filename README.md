@@ -60,9 +60,10 @@ Consume messages:
 - Read the last 10 messages: ```kcli consume <topic> -o -10```
 
 Produce messages:
-- Interactive: ```kcli produce <topic> -p <partition>```
-    - Listens for input from stdin. Each newline sends a new message
-- Non-Interactive: ```echo "my message here" | kcli produce <topic> -p <partition>```
+- Stdin: ```kcli produce <topic>``` or ```cat ./data.json | kcli produce <topic>```
+    - Read stdin until EOF and send as a single message. If not using pipes, use CTRL + D to send an EOF on stdin
+- File: ```kcli product ./data.json```
+    - Sends the entire files as a single message
 
 ## Development
 ### Run tests
