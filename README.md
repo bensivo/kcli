@@ -65,6 +65,12 @@ Produce messages:
 - File: ```kcli product ./data.json```
     - Sends the entire files as a single message
 
+Bash / ZSH autocompletion:
+- To configure shell autocompletion, add the following to your zshrc or bashrc
+    ```
+    source <(kcli completion)
+    ```
+
 ## Development
 ### Run tests
 We use bats-core for testing, for ease of use. This does mean unit tests may be dependent on your available terminal environment.
