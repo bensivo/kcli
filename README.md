@@ -43,14 +43,22 @@ kcli  cluster add my-local-cluster -b localhost:9092 -t 10 -m plain -u my-user -
 
 You can configure multiple kafka clusters at once. kcli offers a few commands to manage them: 
 - View your configured clusters: `kcli cluster list`
+- See a cluster configuration: `kcli cluster get <name>`
 - Switch your active cluster: `kcli cluster use <name>`
     - Or add the --cluster-name, -c flag to manually specify a cluster: `kcli consume my-topic --cluster-name=localhost`
 - Delete a cluster configuration: `kcli cluster remove <name>`
+- Update a cluster configuration: `kcli cluster edit <name> ...flags`
+    - Use any of the flags from the 'cluster add' commadn
 
+### Shell autocompletion:
+- To configure shell autocompletion, add the following to your .zshrc or .bashrc
+    ```
+    source <(kcli completion)
+    ```
 ## Usage
 Topic Operations:
-- List all topics and partitions: `kcli list`
-- Create a new topic: `kcli create <topic> -p <partitions> -r <replication factor>`
+- List all topics and partitions: `kcli topic list`
+- Create a new topic: `kcli topic create <topic> -p <partitions> -r <replication factor>`
 
 Consume messages:
 - Read all messages: ```kcli consume <topic>```
@@ -65,11 +73,6 @@ Produce messages:
 - File: ```kcli product ./data.json```
     - Sends the entire files as a single message
 
-Bash / ZSH autocompletion:
-- To configure shell autocompletion, add the following to your zshrc or bashrc
-    ```
-    source <(kcli completion)
-    ```
 
 ## Development
 ### Run tests
