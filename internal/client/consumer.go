@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"os"
 	"sync"
 
 	"github.com/segmentio/kafka-go"
@@ -72,9 +73,10 @@ func Consume(wg *sync.WaitGroup, cfg ConsumeArgs) {
 		fmt.Println("Failed to read offset", err)
 	}
 
-	// No messages on the topic
 	if last == 0 {
-		fmt.Println("End of partition", cfg.Partition, "at offset", last)
+		// Print to stderr so these logs won't interfere with any bash pipelines
+		// i.e. `kcli consume my.topic | jq`
+		fmt.Fprintln(os.Stderr, "End of partition", cfg.Partition, "at offset", last)
 		if cfg.Exit {
 			return
 		}
@@ -90,14 +92,8 @@ func Consume(wg *sync.WaitGroup, cfg ConsumeArgs) {
 
 		fmt.Printf("%s\n", string(msg.Value))
 
-		// TODO: Do we need to re-read the offset after every message?
-		// last, err = conn.ReadLastOffset()
-		// if err != nil {
-		// 	fmt.Println("Failed to read offset", err)
-		// }
-
 		if msg.Offset == last-1 {
-			fmt.Println("End of partition", cfg.Partition, "at offset", last)
+			fmt.Fprintln(os.Stderr, "End of partition", cfg.Partition, "at offset", last)
 			if cfg.Exit {
 				return
 			}
