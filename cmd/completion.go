@@ -29,7 +29,7 @@ function __kcli_complete() {
 		2) # second word 'use prev to see what the command was'
 			case ${prev} in
 				cluster)
-					COMPREPLY=($(compgen -W "add list remove use" -- ${cur}))
+					COMPREPLY=($(compgen -W "add remove edit get list use" -- ${cur}))
 					;;
 				topic)
 					COMPREPLY=($(compgen -W "create list" -- ${cur}))
@@ -53,6 +53,14 @@ function __kcli_complete() {
 							COMPREPLY=($(compgen -W "$CLUSTERS" -- ${cur}))
 							;;
 						remove)
+							CLUSTERS=$(kcli cluster list | grep "-" | sed 's/^ *- //g' | sed 's/ (Active)//g')
+							COMPREPLY=($(compgen -W "$CLUSTERS" -- ${cur}))
+							;;
+						edit)
+							CLUSTERS=$(kcli cluster list | grep "-" | sed 's/^ *- //g' | sed 's/ (Active)//g')
+							COMPREPLY=($(compgen -W "$CLUSTERS" -- ${cur}))
+							;;
+						get)
 							CLUSTERS=$(kcli cluster list | grep "-" | sed 's/^ *- //g' | sed 's/ (Active)//g')
 							COMPREPLY=($(compgen -W "$CLUSTERS" -- ${cur}))
 							;;
