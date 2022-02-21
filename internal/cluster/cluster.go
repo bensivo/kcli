@@ -11,16 +11,25 @@ import (
 )
 
 type ClusterArgs struct {
-	BootstrapServer string
-	Timeout         int64
-
-	SaslMechanism string
-	SaslUsername  string
-	SaslPassword  string
-
+	BootstrapServer      string
+	Timeout              int64
+	SaslMechanism        string
+	SaslUsername         string
+	SaslPassword         string
 	SSLEnabled           bool
 	SSLCaCertificatePath string
 	SSLSkipVerification  bool
+}
+
+func (ca ClusterArgs) Print() {
+	fmt.Println("bootstrap-server:       ", ca.BootstrapServer)
+	fmt.Println("timeout:                ", ca.Timeout)
+	fmt.Println("sasl-mechanism:         ", ca.SaslMechanism)
+	fmt.Println("sasl-username:          ", ca.SaslUsername)
+	fmt.Println("sasl-password:          ", ca.SaslPassword)
+	fmt.Println("ssl-enabled:            ", ca.SSLEnabled)
+	fmt.Println("ssl-ca-certificate:     ", ca.SSLCaCertificatePath)
+	fmt.Println("ssl-skip-verification:  ", ca.SSLSkipVerification)
 }
 
 func getConfigFilepath() string {
@@ -69,7 +78,7 @@ func UseCluster(name string) {
 	WriteConfig(config)
 }
 
-func AddCluster(name string, options ClusterArgs) {
+func WriteCluster(name string, options ClusterArgs) {
 	fmt.Printf("Adding cluster %s\n", name)
 	config := ReadConfig()
 

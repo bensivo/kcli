@@ -16,7 +16,7 @@ var addClusterCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, arguments []string) {
 		name := cmd.Flags().Arg(0)
-		cluster.AddCluster(name, cluster.ClusterArgs{
+		cluster.WriteCluster(name, cluster.ClusterArgs{
 			BootstrapServer: bootstrapServer,
 			Timeout:         int64(connectionTimeout),
 			SaslMechanism:   saslMechanism,
@@ -39,5 +39,4 @@ func init() {
 	addClusterCmd.Flags().BoolVarP(&sslEnabled, "ssl", "", false, "SSL Enabled")
 	addClusterCmd.Flags().StringVarP(&sslCaCertificatePath, "ssl-ca", "", "", "CA")
 	addClusterCmd.Flags().BoolVarP(&sslSkipVerification, "ssl-skip-verification", "", false, "Skip Verification")
-
 }
