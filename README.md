@@ -5,14 +5,23 @@ A kafka client written in go.
 The fastest way to use kcli is through docker
 
 1. Create a kcli configuration directory
-```
-mkdir ~/.kcli
-```
+    ```
+    mkdir ~/.kcli
+    ```
 
 2. Run the docker container, mounting your directory
-```
-docker run -v ~/.kcli:/root/.kcli bensivo/kcli:latest <commands>
-```
+    ```
+    docker run -v ~/.kcli:/root/.kcli bensivo/kcli:latest <commands>
+    ```
+
+3. (Optional) Alias the docker command
+
+    To make life easier, add this to your ~/.bashrc or ~/.zshrc
+    ```
+    alias kcli='docker run -v ~/.kcli:/root/.kcli bensivo/kcli:latest'
+    ```
+
+    Now you can just run `kcli` and it will execute in docker.
 
 See below for all the commands you can use
 
@@ -23,9 +32,8 @@ If you have golang installed, you can install the native binary like so:
 go install gitlab.com/bensivo/kcli@latest
 ```
 
-kcli will be installed in your go isntallation's 'bin' directory. Make sure that is in your PATH.
+kcli will be installed in your go isntallation's 'bin' directory. Make sure that `$HOME/go/bin` is in your PATH.
 ```
-# If you haven't already done so
 export PATH=$PATH:$HOME/go/bin
 ```
 
@@ -35,10 +43,10 @@ kcli <commands>
 ```
 
 
-## Setup
+## Commands
 
-### Configure your cluster
-Before you can do any cluster operations, add a cluster with: ``` kcli cluster add ```
+### Cluster Setup 
+Before you can do anything, you must add a cluster with: ``` kcli cluster add ```
 
 Supported flags include:
 - -b, --bootstrap-server
@@ -51,7 +59,7 @@ Supported flags include:
 
 Example: 
 ```
-kcli  cluster add my-local-cluster -b localhost:9092 -m plain -u my-user -p my-password
+kcli cluster add localhost -b localhost:9092 -m plain -u my-user -p my-password
 ```
 
 You can configure multiple kafka clusters at once. kcli offers a few commands to manage them: 
@@ -63,24 +71,18 @@ You can configure multiple kafka clusters at once. kcli offers a few commands to
 - Update a cluster configuration: `kcli cluster edit <name> ...flags`
     - Use any of the flags from the 'cluster add' commadn
 
-### Shell autocompletion:
-- To configure shell autocompletion, add the following to your .zshrc or .bashrc
-    ```
-    source <(kcli completion)
-    ```
-## Usage
-Topic Operations:
+### Topic Operations:
 - List all topics and partitions: `kcli topic list`
 - Create a new topic: `kcli topic create <topic> -p <partitions> -r <replication factor>`
 
-Consume messages:
+### Consume messages:
 - Read all messages: ```kcli consume <topic>```
 - Read from a specific partition: ```kcli consume <topic> -p 1```
     - By default, kcli uses partition 0
 - Read starting at the 10th message: ```kcli consume <topic> -o 10```
 - Read the last 10 messages: ```kcli consume <topic> -o -10```
 
-Produce messages:
+### Produce messages:
 - Stdin: ```kcli produce <topic>``` or ```cat ./data.json | kcli produce <topic>```
     - Read stdin until EOF and send as a single message. If not using pipes, use CTRL + D to send an EOF on stdin
 - File: ```kcli product ./data.json```
@@ -108,4 +110,14 @@ Wait for the broker to start, then run tests with:
 ```
 make build
 make test
+```
+
+### Build and Publish Docker image
+We use docker buildx to publish a multi-platform image for x86 and arm processors.
+
+This command was tested using ubuntu, with the latest version of docker installed.
+
+```
+docker buildx build -t bensivo/kcli:latest --platform=linux/arm64,linux/amd64 --push .
+docker buildx build -t bensivo/kcli:<version> --platform=linux/arm64,linux/amd64 --push .
 ```
