@@ -1,26 +1,39 @@
 # kcli
 A kafka client written in go.
 
-------------
-THIS IS A WORK IN PROGRESS - Expect bugs, and changing interfaces for the near future
+## Quick Start - docker
+The fastest way to use kcli is through docker
 
-------------
+1. Create a kcli configuration directory
+```
+mkdir ~/.kcli
+```
 
-## Installation
-To install kcli, just use go install:
+2. Run the docker container, mounting your directory
+```
+docker run -v ~/.kcli:/root/.kcli bensivo/kcli:latest <commands>
+```
+
+See below for all the commands you can use
+
+
+## Quick Start - golang
+If you have golang installed, you can install the native binary like so:
 ```
 go install gitlab.com/bensivo/kcli@latest
 ```
 
-
-Or checkout this repo and build it from scratch:
+kcli will be installed in your go isntallation's 'bin' directory. Make sure that is in your PATH.
 ```
-git clone https://gitlab.com/bensivo/kcli.git
-cd kcli
-go install 
-
-# Ensure that ~/go/bin is in your PATH
+# If you haven't already done so
+export PATH=$PATH:$HOME/go/bin
 ```
+
+Then you can run kcli with:
+```
+kcli <commands>
+```
+
 
 ## Setup
 
@@ -38,7 +51,7 @@ Supported flags include:
 
 Example: 
 ```
-kcli  cluster add my-local-cluster -b localhost:9092 -t 10 -m plain -u my-user -p my-password
+kcli  cluster add my-local-cluster -b localhost:9092 -m plain -u my-user -p my-password
 ```
 
 You can configure multiple kafka clusters at once. kcli offers a few commands to manage them: 
