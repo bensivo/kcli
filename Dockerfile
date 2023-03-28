@@ -1,4 +1,4 @@
-FROM golang:1.17.3-alpine
+FROM golang:1.20.2-alpine3.17 as build
 
 WORKDIR /app
 
@@ -10,6 +10,10 @@ COPY ./internal ./internal
 COPY ./cmd ./cmd
 COPY ./*.go ./
 
-RUN go build
+RUN go build -o /app/kcli
+
+FROM alpine:3.17
+WORKDIR /app
+COPY --from=build /app/kcli /app/kcli
 
 ENTRYPOINT [ "./kcli" ] 
